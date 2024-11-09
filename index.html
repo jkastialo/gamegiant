@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Giant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            font-family: 'Lexend', sans-serif;
+            background: linear-gradient(135deg, #0d0c1d, #2d2b45);
+            color: #fff;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* Header Styling */
+        .banner {
+            width: 100%;
+            background: #222;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .banner h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #F0E130;
+        }
+
+        /* Game Section Styling */
+        .main-content {
+            margin-top: 100px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .game-card {
+            width: 250px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-thumbnail {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background-color: #444;
+        }
+
+        .game-title {
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            background-color: #444;
+            color: #F0E130;
+        }
+
+        /* Full-Screen Game Modal */
+        .modal, .ad-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content, .ad-modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Custom Loading Overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: #F0E130;
+            z-index: 100;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .modal iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            background-color: #222; /* Add background to hide Scratch elements */
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            color: white;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 200;
+        }
+
+        .close-modal:hover {
+            color: #F0E130;
+        }
+
+        /* Ad Popup Styling */
+        .ad-modal-content {
+            padding: 30px;
+            text-align: center;
+            background-color: #333;
+            color: white;
+            border-radius: 10px;
+        }
+
+        .ad-modal h2 {
+            font-size: 1.8em;
+            color: #F0E130;
+            margin-bottom: 15px;
+        }
+
+        .ad-modal p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .ad-link {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #F0E130;
+            color: #222;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .ad-link:hover {
+            background-color: #d9c821;
+        }
+
+        /* Scratch Cover Border */
+        .iframe-cover {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 50px; /* Adjusted height to hide Scratch top bar */
+            background: #222;
+            z-index: 150;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="banner">
+        <h1>Game Giant</h1>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="game-card" onclick="showGameModal('roulette')">
+            <img src="https://i.imgur.com/SWTaxYg.png" alt="Roulette Thumbnail" class="game-thumbnail">
+            <div class="game-title">Roulette</div>
+        </div>
+        <div class="game-card" onclick="showGameModal('mines')">
+            <img src="https://i.imgur.com/ozXUYA3.png" alt="Mines Thumbnail" class="game-thumbnail">
+            <div class="game-title">Mines</div>
+        </div>
+    </div>
+
+    <!-- Game Modal -->
+    <div id="gameModal" class="modal" onclick="hideGameModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="hideGameModal()">&times;</span>
+            <div class="loading-overlay" id="loadingOverlay">
+                <h1>Game Giant</h1>
+                <p>Loading your game...</p>
+            </div>
+            <div class="iframe-cover"></div> <!-- Scratch Cover -->
+            <iframe id="gameFrame" allowtransparency="true" scrolling="no" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Ad Modal -->
+    <div id="adModal" class="ad-modal" onclick="hideAdModal()">
+        <div class="ad-modal-content" onclick="event.stopPropagation()">
+            <h2>Get this week's free code!</h2>
+            <p>Watch ads to receive in-game codes for cash! (10k+)</p>
+            <a href="https://direct-link.net/418612/limited-time-game-cash" target="_blank" class="ad-link">Get Code</a>
+            <span class="close-modal" onclick="hideAdModal()">&times;</span>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const gameURLs = {
+            'roulette': 'https://scratch.mit.edu/projects/1091122582/embed',
+            'mines': 'https://scratch.mit.edu/projects/1074136039/embed'
+        };
+
+        const loadingDurations = {
+            'roulette': 5000,
+            'mines': 3000
+        };
+
+        function showGameModal(game) {
+            const modal = document.getElementById('gameModal');
+            const gameFrame = document.getElementById('gameFrame');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            gameFrame.src = gameURLs[game];
+            modal.style.display = 'flex';
+            loadingOverlay.style.display = 'flex';
+
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                showAdModal(); // Show ad after game loads
+            }, loadingDurations[game]);
+        }
+
+        function hideGameModal() {
+            const modal = document.getElementById('gameModal');
+            const gameFrame = document.getElementById('gameFrame');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            gameFrame.src = '';
+            modal.style.display = 'none';
+            loadingOverlay.style.display = 'flex';
+        }
+
+        function showAdModal() {
+            document.getElementById('adModal').style.display = 'flex';
+        }
+
+        function hideAdModal() {
+            document.getElementById('adModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
